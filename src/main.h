@@ -51,7 +51,7 @@ static const int64_t HARD_FORK_BLOCK = 112200;
 //All the TESTNET options
 static const int LAST_POW_BLOCK_TEST = 250;
 static const int MODIFIER_INTERVAL_SWITCH_TEST = 60;
-static const int64_t MAX_MINT_PROOF_OF_STAKE_OLD_TEST = 50 * CENT;
+static const int64_t MAX_MINT_PROOF_OF_STAKE_OLD_TEST = 100 * CENT;
 static const int LAST_OLD_POS_BLOCK_TEST = 112;
 static const int64_t HARD_FORK_BLOCK_TEST = 300;
 

@@ -1036,7 +1036,7 @@ int64_t GetProofOfStakeReward(int64_t nCoinAge, int64_t nFees)
             nRewardCoinYear = 0.02 * CENT; // 0.02% interest
         nSubsidy = nCoinAge * nRewardCoinYear / 365;
     }
-    else if (!fTestNet pindexBest->nHeight > LAST_OLD_POS_BLOCK)
+    else if (!fTestNet && pindexBest->nHeight > LAST_OLD_POS_BLOCK)
         nSubsidy = nCoinAge * nRewardCoinYear / 365;
     else if (!fTestNet)
         nSubsidy = nCoinAge * nRewardCoinYear / 365 / COIN;

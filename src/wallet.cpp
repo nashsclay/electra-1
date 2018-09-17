@@ -1531,7 +1531,7 @@ bool CWallet::GetStakeWeight(const CKeyStore& keystore, uint64_t& nMinWeight, ui
                 continue;
         }
 
-        int64_t nTimeWeight = GetWeight((int64_t)pcoin.first->nTime, (int64_t)GetTime(), pindexBest->nHeight+1>=HARD_FORK_BLOCK);
+        int64_t nTimeWeight = GetWeight((int64_t)pcoin.first->nTime, (int64_t)GetTime(), pindexBest->nHeight+1>=(!fTestNet?HARD_FORK_BLOCK:HARD_FORK_BLOCK_TEST));
         CBigNum bnCoinDayWeight = CBigNum(pcoin.first->vout[pcoin.second].nValue) * nTimeWeight / COIN / (24 * 60 * 60);
 
         // Weight is greater than zero
@@ -1541,13 +1541,14 @@ bool CWallet::GetStakeWeight(const CKeyStore& keystore, uint64_t& nMinWeight, ui
         }
 
         // Weight is greater than zero, but the maximum value isn't reached yet
-        if (nTimeWeight > 0 && nTimeWeight < (pindexBest->nHeight+1>=HARD_FORK_BLOCK ? nStakeMaxAge : nStakeMaxAgeOld))
+        int64_t nhardforkblock = !fTestNet?HARD_FORK_BLOCK:HARD_FORK_BLOCK_TEST;
+        if (nTimeWeight > 0 && nTimeWeight < (pindexBest->nHeight+1>=nhardforkblock ? nStakeMaxAge : nStakeMaxAgeOld))
         {
             nMinWeight += bnCoinDayWeight.getuint64();
         }
 
         // Maximum weight was reached
-        if (nTimeWeight == (pindexBest->nHeight+1>=HARD_FORK_BLOCK ? nStakeMaxAge : nStakeMaxAgeOld))
+        if (nTimeWeight == (pindexBest->nHeight+1>=nhardforkblock ? nStakeMaxAge : nStakeMaxAgeOld))
         {
             nMaxWeight += bnCoinDayWeight.getuint64();
         }
@@ -1679,7 +1680,7 @@ bool CWallet::CreateCoinStake(const CKeyStore& keystore, unsigned int nBits, int
                 vwtxPrev.push_back(pcoin.first);
                 txNew.vout.push_back(CTxOut(0, scriptPubKeyOut));
 
-                if (GetWeight(block.GetBlockTime(), (int64_t)txNew.nTime, pindexBest->nHeight+1>=HARD_FORK_BLOCK) < nStakeSplitAge)
+                if (GetWeight(block.GetBlockTime(), (int64_t)txNew.nTime, pindexBest->nHeight+1>=!fTestNet?HARD_FORK_BLOCK:HARD_FORK_BLOCK_TEST) < nStakeSplitAge)
                     txNew.vout.push_back(CTxOut(0, scriptPubKeyOut)); //split stake
                 if (fDebug && GetBoolArg("-printcoinstake"))
                     printf("CreateCoinStake : added kernel type=%d\n", whichType);
@@ -1702,7 +1703,7 @@ bool CWallet::CreateCoinStake(const CKeyStore& keystore, unsigned int nBits, int
         if (txNew.vout.size() == 2 && ((pcoin.first->vout[pcoin.second].scriptPubKey == scriptPubKeyKernel || pcoin.first->vout[pcoin.second].scriptPubKey == txNew.vout[1].scriptPubKey))
             && pcoin.first->GetHash() != txNew.vin[0].prevout.hash)
         {
-            int64_t nTimeWeight = GetWeight((int64_t)pcoin.first->nTime, (int64_t)txNew.nTime, pindexBest->nHeight+1>=HARD_FORK_BLOCK);
+            int64_t nTimeWeight = GetWeight((int64_t)pcoin.first->nTime, (int64_t)txNew.nTime, pindexBest->nHeight+1>=!fTestNet?HARD_FORK_BLOCK:HARD_FORK_BLOCK_TEST);
 
             // Stop adding more inputs if already too many inputs
             if (txNew.vin.size() >= 100)

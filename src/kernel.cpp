@@ -274,7 +274,6 @@ bool CheckStakeKernelHash(unsigned int nBits, const CBlock& blockFrom, unsigned 
         return error("CheckStakeKernelHash() : nTime violation");
 
     unsigned int nTimeBlockFrom = blockFrom.GetBlockTime();
-    int64_t nHardForkBlock = !fTestNet?HARD_FORK_BLOCK:HARD_FORK_BLOCK_TEST;
 
     if (nTimeBlockFrom +  nStakeMinAge  > nTimeTx) // Min age requirement
         return error("CheckStakeKernelHash() : min age violation");

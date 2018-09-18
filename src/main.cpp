@@ -42,11 +42,8 @@ CBigNum bnProofOfStakeLimit(~uint256(0) >> 20);
 CBigNum bnProofOfWorkLimitTestNet(~uint256(0) >> 16);
 
 unsigned int nTargetSpacing = 30; // 2.5 minutes
-unsigned int nTargetSpacingOld = 45; // 5 minutes
 unsigned int nStakeMinAge = 0.1 * 60 * 60 ; // 12 hours
-unsigned int nStakeMinAgeOld = 0.5 * 60 * 60 ; // 24 hours
-unsigned int nStakeMaxAge = 30 * 24 * 60 * 60; // 30 days
-unsigned int nStakeMaxAgeOld = -1; // unlimited
+unsigned int nStakeMaxAge = -1;
 unsigned int nModifierInterval = 10 * 60 ; // time to elapse before new modifier is computed
 
 int nCoinbaseMaturity = 2;
@@ -1012,31 +1009,12 @@ int64_t GetProofOfStakeReward(int64_t nCoinAge, int64_t nFees)
     int64_t nRewardCoinYear;
 
     nRewardCoinYear = (!fTestNet ? MAX_MINT_PROOF_OF_STAKE_OLD : MAX_MINT_PROOF_OF_STAKE_OLD_TEST) ;
-    int64_t nHardForkBlock = !fTestNet?HARD_FORK_BLOCK:HARD_FORK_BLOCK_TEST;
 
     int64_t nSubsidy;
 
-    if (pindexBest->nHeight >= nHardForkBlock) // 24 * 60 / 2.5 = 576 blocks per day after fork (210384 blocks per year)
-    {
-        if (pindexBest->nHeight < nHardForkBlock + 210384) // first year
-            nRewardCoinYear = 2.5 * CENT; // 2.5% interest
-        else if (pindexBest->nHeight < nHardForkBlock + 210384 * 2) // second year
-            nRewardCoinYear = 1.25 * CENT; // 1.25% interest
-        else if (pindexBest->nHeight < nHardForkBlock + 210384 * 3) // third year
-            nRewardCoinYear = 0.63 * CENT; // 0.63% interest
-        else if (pindexBest->nHeight < nHardForkBlock + 210384 * 4) // fourth year
-            nRewardCoinYear = 0.31 * CENT; // 0.31% interest
-        else if (pindexBest->nHeight < nHardForkBlock + 210384 * 5) // fifth year
-            nRewardCoinYear = 0.16 * CENT; // 0.16% interest
-        else if (pindexBest->nHeight < nHardForkBlock + 210384 * 6) // sixth year
-            nRewardCoinYear = 0.08 * CENT; // 0.08% interest
-        else if (pindexBest->nHeight < nHardForkBlock + 210384 * 7) // seventh year
-            nRewardCoinYear = 0.04 * CENT; // 0.04% interest
-        else // eighth year and beyond
-            nRewardCoinYear = 0.02 * CENT; // 0.02% interest
+    if (fTestNet)
         nSubsidy = nCoinAge * nRewardCoinYear / 365;
-    }
-    else if (pindexBest->nHeight > (!fTestNet?LAST_OLD_POS_BLOCK:LAST_OLD_POS_BLOCK_TEST))
+    else if (pindexBest->nHeight > LAST_OLD_POS_BLOCK)
         nSubsidy = nCoinAge * nRewardCoinYear / 365;
     else
         nSubsidy = nCoinAge * nRewardCoinYear / 365 / COIN;
@@ -1116,27 +1094,17 @@ static unsigned int GetNextTargetRequired_(const CBlockIndex* pindexLast, bool f
         return bnTargetLimit.GetCompact(); // second block
 
     int64_t nActualSpacing = pindexPrev->GetBlockTime() - pindexPrevPrev->GetBlockTime();
-    int64_t nHardForkBlock = !fTestNet?HARD_FORK_BLOCK:HARD_FORK_BLOCK_TEST;
     if (nActualSpacing < 0)
-        nActualSpacing = (pindexLast->nHeight+1>=nHardForkBlock ? nTargetSpacing : nTargetSpacingOld);
+        nActualSpacing = (pindexLast->nHeight+1>=nTargetSpacing);
 
     // Electra: target change every block
     // Electra: retarget with exponential moving toward target spacing
     CBigNum bnNew;
     bnNew.SetCompact(pindexPrev->nBits);
 
-    if (pindexLast->nHeight+1 >= nHardForkBlock)
-    {
-        int64_t nInterval = nTargetTimespan / nTargetSpacing;
-        bnNew *= ((nInterval - 1) * nTargetSpacing + nActualSpacing + nActualSpacing);
-        bnNew /= ((nInterval + 1) * nTargetSpacing);
-    }
-    else
-    {
-        int64_t nInterval = nTargetTimespan / nTargetSpacingOld;
-        bnNew *= ((nInterval - 1) * nTargetSpacingOld + nActualSpacing + nActualSpacing);
-        bnNew /= ((nInterval + 1) * nTargetSpacingOld);
-    }
+    int64_t nInterval = nTargetTimespan / nTargetSpacing;
+    bnNew *= ((nInterval - 1) * nTargetSpacing + nActualSpacing + nActualSpacing);
+    bnNew /= ((nInterval + 1) * nTargetSpacing);
 
     if (bnNew <= 0 || bnNew > bnTargetLimit)
         bnNew = bnTargetLimit;
@@ -1959,11 +1927,10 @@ bool CTransaction::GetCoinAge(CTxDB& txdb, uint64_t& nCoinAge) const
 
         // Read block header
         CBlock block;
-        int64_t nHardForkBlock = !fTestNet?HARD_FORK_BLOCK:HARD_FORK_BLOCK_TEST;
 
         if (!block.ReadFromDisk(txindex.pos.nFile, txindex.pos.nBlockPos, false))
             return false; // unable to read block of previous transaction
-        if (block.GetBlockTime() + (pindexBest->nHeight+1>=nHardForkBlock ? nStakeMinAge : nStakeMinAgeOld) > nTime)
+        if (block.GetBlockTime() + (pindexBest->nHeight+1>= nStakeMinAge) > nTime)
             continue; // only count coins meeting min age requirement
 
         int64_t nValueIn = txPrev.vout[txin.prevout.n].nValue;
@@ -1974,7 +1941,9 @@ bool CTransaction::GetCoinAge(CTxDB& txdb, uint64_t& nCoinAge) const
     }
 
     CBigNum bnCoinDay;
-    if(pindexBest->nHeight > (!fTestNet?LAST_OLD_POS_BLOCK:LAST_OLD_POS_BLOCK_TEST))
+    if (fTestNet)
+        bnCoinDay = bnCentSecond * CENT / COIN / (24 * 60 * 60);
+    else if(pindexBest->nHeight > LAST_OLD_POS_BLOCK)
         bnCoinDay = bnCentSecond * CENT / COIN / (24 * 60 * 60);
     else
         bnCoinDay = bnCentSecond * CENT / (24 * 60 * 60);
@@ -3232,7 +3201,6 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
         if (pindex)
             pindex = pindex->pnext;
         int nLimit = 500;
-        int64_t nHardForkBlock = !fTestNet?HARD_FORK_BLOCK:HARD_FORK_BLOCK_TEST;
         printf("getblocks %d to %s limit %d\n", (pindex ? pindex->nHeight : -1), hashStop.ToString().substr(0,20).c_str(), nLimit);
         for (; pindex; pindex = pindex->pnext)
         {
@@ -3241,7 +3209,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
                 printf("  getblocks stopping at %d %s\n", pindex->nHeight, pindex->GetBlockHash().ToString().substr(0,20).c_str());
                 // Electra: tell downloading node about the latest block if it's
                 // without risk being rejected due to stake connection check
-                if (hashStop != hashBestChain && pindex->GetBlockTime() + (pindex->nHeight+1>=nHardForkBlock ? nStakeMinAge : nStakeMinAgeOld) > pindexBest->GetBlockTime())
+                if (hashStop != hashBestChain && pindex->GetBlockTime() + (pindex->nHeight+1>=nStakeMinAge) > pindexBest->GetBlockTime())
                     pfrom->PushInventory(CInv(MSG_BLOCK, hashBestChain));
                 break;
             }

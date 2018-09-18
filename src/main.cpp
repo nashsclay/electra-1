@@ -2149,7 +2149,7 @@ bool CBlock::AcceptBlock()
     CBlockIndex* pindexPrev = (*mi).second;
     int nHeight = pindexPrev->nHeight+1;
 
-    if (IsProofOfWork()  && nHeight > !fTestNet?LAST_POW_BLOCK:LAST_POW_BLOCK_TEST)
+    if (IsProofOfWork()  && nHeight > ( !fTestNet ? LAST_POW_BLOCK : LAST_POW_BLOCK_TEST))
         return DoS(100, error("AcceptBlock() : reject proof-of-work at height %d", nHeight));
 
     if (IsProofOfStake() && !fTestNet && nHeight < MODIFIER_INTERVAL_SWITCH )

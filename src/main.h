@@ -51,7 +51,7 @@ static const int64_t HARD_FORK_BLOCK = 112200;
 //All the TESTNET options
 static const int LAST_POW_BLOCK_TEST = 250;
 static const int64_t MAX_MINT_PROOF_OF_STAKE_OLD_TEST = 50 * CENT;
-static const int64_t HARD_FORK_BLOCK_TEST = 320;
+static const int64_t HARD_FORK_BLOCK_TEST = 300;
 
 inline bool MoneyRange(int64_t nValue) { return (nValue >= 0); }
 // Threshold for nLockTime: below this value it is interpreted as block number, otherwise as UNIX timestamp.

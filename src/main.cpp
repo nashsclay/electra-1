@@ -1007,16 +1007,24 @@ int64_t GetProofOfWorkReward(int64_t nFees)
 }
 //const int DAILY_BLOCKCOUNT =  1440;
 // miner's coin stake reward based on coin age spent (coin-days)
-int64_t GetProofOfStakeReward(int64_t nCoinAge, int64_t nFees)
-{
+int64_t GetProofOfStakeReward(int64_t nCoinAge, int64_t nFees) {
     int64_t nRewardCoinYear;
 
-    nRewardCoinYear = (!fTestNet ? MAX_MINT_PROOF_OF_STAKE_OLD : MAX_MINT_PROOF_OF_STAKE_OLD_TEST) ;
+    nRewardCoinYear = (!fTestNet ? MAX_MINT_PROOF_OF_STAKE_OLD : MAX_MINT_PROOF_OF_STAKE_OLD_TEST);
 
     int64_t nSubsidy;
 
+    if (fTestNet)
+    {
+        if (pindexBest->nHeight >= HARD_FORK_BLOCK_TEST) {
+            nRewardCoinYear = 25 * CENT; // 25% interest
+            nSubsidy = nCoinAge * nRewardCoinYear / 365;
+        }
+        else
+            nSubsidy = nCoinAge * nRewardCoinYear / 365;
 
-    if (!fTestNet && pindexBest->nHeight >= HARD_FORK_BLOCK) // 24 * 60 / 2.5 = 576 blocks per day after fork (210384 blocks per year)
+    }
+    else if (!fTestNet && pindexBest->nHeight >= HARD_FORK_BLOCK) // 24 * 60 / 2.5 = 576 blocks per day after fork (210384 blocks per year)
     {
         if (pindexBest->nHeight < HARD_FORK_BLOCK + 210384) // first year
             nRewardCoinYear = 2.5 * CENT; // 2.5% interest
@@ -1975,7 +1983,9 @@ bool CTransaction::GetCoinAge(CTxDB& txdb, uint64_t& nCoinAge) const
     }
 
     CBigNum bnCoinDay;
-    if(pindexBest->nHeight > (!fTestNet?LAST_OLD_POS_BLOCK:LAST_OLD_POS_BLOCK_TEST))
+    if (fTestNet)
+        bnCoinDay = bnCentSecond * CENT / COIN / (24 * 60 * 60);
+    else if(pindexBest->nHeight > LAST_OLD_POS_BLOCK)
         bnCoinDay = bnCentSecond * CENT / COIN / (24 * 60 * 60);
     else
         bnCoinDay = bnCentSecond * CENT / (24 * 60 * 60);
@@ -2183,7 +2193,7 @@ bool CBlock::AcceptBlock()
     CBlockIndex* pindexPrev = (*mi).second;
     int nHeight = pindexPrev->nHeight+1;
 
-    if (IsProofOfWork() && !fTestNet && nHeight > LAST_POW_BLOCK)
+    if (IsProofOfWork()  && nHeight > ( !fTestNet ? LAST_POW_BLOCK : LAST_POW_BLOCK_TEST))
         return DoS(100, error("AcceptBlock() : reject proof-of-work at height %d", nHeight));
 
     if (IsProofOfStake() && !fTestNet && nHeight < MODIFIER_INTERVAL_SWITCH )

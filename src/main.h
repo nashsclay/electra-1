@@ -47,7 +47,7 @@ static const int LAST_OLD_POS_BLOCK = 17100;
 
 
 //All the TESTNET options
-static const int LAST_POW_BLOCK_TEST = 250;
+static const int LAST_POW_BLOCK_TEST = 290;
 static const int64_t MAX_MINT_PROOF_OF_STAKE_OLD_TEST = 50 * CENT;
 
 inline bool MoneyRange(int64_t nValue) { return (nValue >= 0); }

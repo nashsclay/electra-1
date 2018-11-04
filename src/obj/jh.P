@@ -1,0 +1,4 @@
+obj/jh.o: jh.c /Users/ruannelloyd/CLionProjects/electra/src/sph_jh.h \
+  /Users/ruannelloyd/CLionProjects/electra/src/sph_types.h
+jh.c /Users/ruannelloyd/CLionProjects/electra/src/sph_jh.h :
+  /Users/ruannelloyd/CLionProjects/electra/src/sph_types.h :

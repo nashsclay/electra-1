@@ -1,0 +1,6 @@
+obj/keccak.o: keccak.c \
+  /Users/ruannelloyd/CLionProjects/electra/src/sph_keccak.h \
+  /Users/ruannelloyd/CLionProjects/electra/src/sph_types.h
+keccak.c :
+  /Users/ruannelloyd/CLionProjects/electra/src/sph_keccak.h :
+  /Users/ruannelloyd/CLionProjects/electra/src/sph_types.h :

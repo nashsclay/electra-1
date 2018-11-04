@@ -1,0 +1,6 @@
+obj/skein.o: skein.c \
+  /Users/ruannelloyd/CLionProjects/electra/src/sph_skein.h \
+  /Users/ruannelloyd/CLionProjects/electra/src/sph_types.h
+skein.c :
+  /Users/ruannelloyd/CLionProjects/electra/src/sph_skein.h :
+  /Users/ruannelloyd/CLionProjects/electra/src/sph_types.h :

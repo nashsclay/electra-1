@@ -143,9 +143,9 @@ uint256 scrypt_nosalt(const void* input, size_t inputlen, void *scratchpad)
     uint256 result = 0;
     V = (unsigned int *)(((uintptr_t)(scratchpad) + 63) & ~ (uintptr_t)(63));
 
-    PBKDF2_SHA256((const uint8_t*)input, inputlen, (const uint8_t*)input, inputlen, 1, (uint8_t *)X, 128);
+    PBKDF2_SHA256_2((const uint8_t*)input, inputlen, (const uint8_t*)input, inputlen, 1, (uint8_t *)X, 128);
     scrypt_core(X, V);
-    PBKDF2_SHA256((const uint8_t*)input, inputlen, (uint8_t *)X, 128, 1, (uint8_t*)&result, 32);
+    PBKDF2_SHA256_2((const uint8_t*)input, inputlen, (uint8_t *)X, 128, 1, (uint8_t*)&result, 32);
 
     return result;
 }
@@ -157,9 +157,9 @@ uint256 scrypt(const void* data, size_t datalen, const void* salt, size_t saltle
     uint256 result = 0;
     V = (unsigned int *)(((uintptr_t)(scratchpad) + 63) & ~ (uintptr_t)(63));
 
-    PBKDF2_SHA256((const uint8_t*)data, datalen, (const uint8_t*)salt, saltlen, 1, (uint8_t *)X, 128);
+    PBKDF2_SHA256_2((const uint8_t*)data, datalen, (const uint8_t*)salt, saltlen, 1, (uint8_t *)X, 128);
     scrypt_core(X, V);
-    PBKDF2_SHA256((const uint8_t*)data, datalen, (uint8_t *)X, 128, 1, (uint8_t*)&result, 32);
+    PBKDF2_SHA256_2((const uint8_t*)data, datalen, (uint8_t *)X, 128, 1, (uint8_t*)&result, 32);
 
     return result;
 }

@@ -1,0 +1,8 @@
+obj/version.o: version.cpp \
+  /Users/ruannelloyd/CLionProjects/electra/src/version.h \
+  /Users/ruannelloyd/CLionProjects/electra/src/clientversion.h \
+  /Users/ruannelloyd/CLionProjects/electra/src/obj/build.h
+version.cpp :
+  /Users/ruannelloyd/CLionProjects/electra/src/version.h :
+  /Users/ruannelloyd/CLionProjects/electra/src/clientversion.h :
+  /Users/ruannelloyd/CLionProjects/electra/src/obj/build.h :

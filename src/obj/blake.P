@@ -1,0 +1,6 @@
+obj/blake.o: blake.c \
+  /Users/ruannelloyd/CLionProjects/electra/src/sph_blake.h \
+  /Users/ruannelloyd/CLionProjects/electra/src/sph_types.h
+blake.c :
+  /Users/ruannelloyd/CLionProjects/electra/src/sph_blake.h :
+  /Users/ruannelloyd/CLionProjects/electra/src/sph_types.h :

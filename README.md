@@ -17,7 +17,34 @@
 </p>
 
 # What is Electra?
-Electra is a blockchain using the highly-secure and power efficient NIST5 algorithm. Combining temporary Proof-of-Work with high Proof-of-Stake, the Electra coin (ECA) is unique in its distribution. On June 16, 2017, Electra entered "Super Rewards Bonanza" stage for 24 hours (Blocks 11522-11810). During this time, 95% of the proof-of-work coins were mined. At block 11811, Electra swapped to Proof-of-Stake with an annual interest rate of 50% until the Electra supply reaches 30bil. Once 30bil ECA is reached, block rewards will be earned through transaction fees only. This created a gold-rush period, promoting the network (or was hoped to) and rapidly increasing the amount of ECA.
+Electra is a blockchain using the highly-secure and power efficient NIST5 algorithm. Combining temporary Proof-of-Work with high Proof-of-Stake, the Electra coin (ECA) is unique in its distribution. On June 16, 2017, Electra entered "Super Rewards Bonanza" stage for 24 hours (Blocks 11522-11810). During this time, 95% of the proof-of-work coins were mined. At block 11811, Electra swapped to Proof-of-Stake with an annual interest rate of 50% until block 112200. This created a gold-rush period, promoting the network (or was hoped to) and rapidly increasing the amount of ECA. The 30bil ECA is a soft limit, and will be controlled by the POS Block rewards.
+
+<a name="specifications"></a>
+## Specifications
+<table>
+<tr> <td>Ticker</td><td>ECA</td></tr>
+<tr> <td>Algorithm</td><td>NIST5</td></tr>
+<tr> <td>Maximum supply</td><td>30,000,000</td></tr>
+<tr> <td>Block time</td><td>150 seconds</td></tr>
+<tr> <td>Staking Age</td><td>12 hours</td></tr>
+<tr> <td>Retarget</td><td>150 seconds</td></tr>
+<tr> <td>Private transactions</td><td>Yes</td></tr>
+</table>
+
+## PoS Block Rewards
+
+| Percentage | Block              | Note          |
+|------------|--------------------|---------------|
+| 50%        | 11811   - 112200   | Year 1        |
+| 2.5%       | 112201  - 322585   | Year 2        |
+| 1.25%      | 322586  - 532970   | Year 3        |
+| 0.63%      | 532971  - 743355   | Year 4        |
+| 0.31%      | 743356  - 953740   | Year 5        |
+| 0.16%      | 953741  - 1164125  | Year 6        |
+| 0.08%      | 1164126 - 1374510  | Year 7        |
+| 0.04%      | 1374511 - 1584895  | Year 8        |
+| 0.02%      | 1584896            | onwards        |
+
 
 ## Our Mission
 Leverage blockchain technology and provide users with fast and secure transactions.
